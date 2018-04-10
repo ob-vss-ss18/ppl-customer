@@ -4,6 +4,6 @@ import "fmt"
 
 func main(){
 	var out string;
-	out = "Goodbye World \n";
+	out = "Goodbye beautiful World \n";
 	fmt.Printf(out);
 }
