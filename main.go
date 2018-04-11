@@ -7,8 +7,8 @@ import ("fmt"
 )
 
 func main(){
-	//http.HandleFunc("/", GraphQL.Incoming)
-	http.HandleFunc("/", GraphQL.Test)
+	http.HandleFunc("/", GraphQL.Incoming)
+	http.HandleFunc("/test", GraphQL.Test)
 	fmt.Println("listening...")
 	err := http.ListenAndServe(":"+os.Getenv("PORT"), nil)
 	if err != nil {
