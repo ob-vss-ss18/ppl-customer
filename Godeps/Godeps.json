@@ -2,5 +2,61 @@
 	"ImportPath": "github.com/ob-vss-ss18/ppl-customer",
 	"GoVersion": "go1.10",
 	"GodepVersion": "v80",
-	"Deps": []
+	"Deps": [
+		{
+			"ImportPath": "github.com/graphql-go/graphql",
+			"Comment": "v0.7.5-22-gc35670f",
+			"Rev": "c35670f3d7b814d4f4e45d059e492cad597dac31"
+		},
+		{
+			"ImportPath": "github.com/graphql-go/graphql/gqlerrors",
+			"Comment": "v0.7.5-22-gc35670f",
+			"Rev": "c35670f3d7b814d4f4e45d059e492cad597dac31"
+		},
+		{
+			"ImportPath": "github.com/graphql-go/graphql/language/ast",
+			"Comment": "v0.7.5-22-gc35670f",
+			"Rev": "c35670f3d7b814d4f4e45d059e492cad597dac31"
+		},
+		{
+			"ImportPath": "github.com/graphql-go/graphql/language/kinds",
+			"Comment": "v0.7.5-22-gc35670f",
+			"Rev": "c35670f3d7b814d4f4e45d059e492cad597dac31"
+		},
+		{
+			"ImportPath": "github.com/graphql-go/graphql/language/lexer",
+			"Comment": "v0.7.5-22-gc35670f",
+			"Rev": "c35670f3d7b814d4f4e45d059e492cad597dac31"
+		},
+		{
+			"ImportPath": "github.com/graphql-go/graphql/language/location",
+			"Comment": "v0.7.5-22-gc35670f",
+			"Rev": "c35670f3d7b814d4f4e45d059e492cad597dac31"
+		},
+		{
+			"ImportPath": "github.com/graphql-go/graphql/language/parser",
+			"Comment": "v0.7.5-22-gc35670f",
+			"Rev": "c35670f3d7b814d4f4e45d059e492cad597dac31"
+		},
+		{
+			"ImportPath": "github.com/graphql-go/graphql/language/printer",
+			"Comment": "v0.7.5-22-gc35670f",
+			"Rev": "c35670f3d7b814d4f4e45d059e492cad597dac31"
+		},
+		{
+			"ImportPath": "github.com/graphql-go/graphql/language/source",
+			"Comment": "v0.7.5-22-gc35670f",
+			"Rev": "c35670f3d7b814d4f4e45d059e492cad597dac31"
+		},
+		{
+			"ImportPath": "github.com/graphql-go/graphql/language/typeInfo",
+			"Comment": "v0.7.5-22-gc35670f",
+			"Rev": "c35670f3d7b814d4f4e45d059e492cad597dac31"
+		},
+		{
+			"ImportPath": "github.com/graphql-go/graphql/language/visitor",
+			"Comment": "v0.7.5-22-gc35670f",
+			"Rev": "c35670f3d7b814d4f4e45d059e492cad597dac31"
+		}
+	]
 }
