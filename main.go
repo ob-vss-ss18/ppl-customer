@@ -1,8 +1,9 @@
-package ppl_customer
+package main
 
 import ("fmt"
-		"net/http"
-		"os")
+	"net/http"
+	"os"
+)
 
 func main(){
 	http.HandleFunc("/", hello)
@@ -16,3 +17,4 @@ func main(){
 func hello(res http.ResponseWriter, req *http.Request) {
 	fmt.Fprintln(res, "Good boy Google")
 }
+
