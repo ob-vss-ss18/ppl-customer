@@ -13,7 +13,7 @@ func Test(res http.ResponseWriter, req *http.Request) {
 }
 
 func Incoming(res http.ResponseWriter, req *http.Request) {
-
+	fmt.Fprintln(res, "Es ist nicht so wie du denkst, wenn du das denkst, was ich denke, was du denkst, denn das denken der Gedanken ist ein denkenloses Denken darum denke nicht gedacht zu haben")
 	fields := graphql.Fields{
 		"hello": &graphql.Field{
 			Type: graphql.String,
