@@ -1,4 +1,4 @@
-package main
+package ppl_customer
 
 import ("fmt"
 		"net/http"
