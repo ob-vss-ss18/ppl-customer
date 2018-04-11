@@ -8,6 +8,7 @@ import (
 
 	"log"
 	"encoding/json"
+
 )
 
 var	schema graphql.Schema
@@ -20,6 +21,8 @@ func Test(res http.ResponseWriter, req *http.Request) {
 
 func initializeScheme() {
 
+
+
 	fields := graphql.Fields{
 		"hello": &graphql.Field{
 			Type: graphql.String,
@@ -27,12 +30,22 @@ func initializeScheme() {
 				return "world", nil
 			},
 		},
+
+		"Hello":&graphql.Field{
+			Type:graphql.String,
+			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+				return "WORLD", nil
+			},
+		},
+
 	}
+
 
 	rootQuery := graphql.ObjectConfig{Name: "RootQuery", Fields: fields}
 	schemaConfig := graphql.SchemaConfig{Query: graphql.NewObject(rootQuery)}
 	var err error
 	schema, err = graphql.NewSchema(schemaConfig)
+
 
 	if err != nil {
 		log.Fatalf("failed to create new schema, error: %v", err)
