@@ -40,9 +40,9 @@ func initializeScheme() {
 }
 
 func InitHandler() http.Handler{
-	if &schema == nil {
-		initializeScheme()
-	}
+
+	initializeScheme()
+
 
 	handle := handler.New(&handler.Config{
 		Schema: &schema,
@@ -55,10 +55,6 @@ func InitHandler() http.Handler{
 
 func Incoming(res http.ResponseWriter, req *http.Request) {
 	fmt.Fprintln(res, "Es ist nicht so wie du denkst, wenn du das denkst, was ich denke, was du denkst, denn das denken der Gedanken ist ein denkenloses Denken darum denke nicht gedacht zu haben")
-
-	if &schema == nil {
-		initializeScheme()
-	}
 
 	// Query
 	query := `
