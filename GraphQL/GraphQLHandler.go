@@ -10,11 +10,16 @@ import (
 	"encoding/json"
 )
 
+var	schema graphql.Schema
+
+
+
 func Test(res http.ResponseWriter, req *http.Request) {
 	fmt.Fprintln(res, "Hello Heroku!")
 }
 
-func InitHandler() http.Handler{
+func initializeScheme() {
+
 	fields := graphql.Fields{
 		"hello": &graphql.Field{
 			Type: graphql.String,
@@ -23,11 +28,20 @@ func InitHandler() http.Handler{
 			},
 		},
 	}
+
 	rootQuery := graphql.ObjectConfig{Name: "RootQuery", Fields: fields}
 	schemaConfig := graphql.SchemaConfig{Query: graphql.NewObject(rootQuery)}
-	schema, err := graphql.NewSchema(schemaConfig)
+	var err error
+	schema, err = graphql.NewSchema(schemaConfig)
+
 	if err != nil {
 		log.Fatalf("failed to create new schema, error: %v", err)
+	}
+}
+
+func InitHandler() http.Handler{
+	if &schema == nil {
+		initializeScheme()
 	}
 
 	handle := handler.New(&handler.Config{
@@ -41,19 +55,9 @@ func InitHandler() http.Handler{
 
 func Incoming(res http.ResponseWriter, req *http.Request) {
 	fmt.Fprintln(res, "Es ist nicht so wie du denkst, wenn du das denkst, was ich denke, was du denkst, denn das denken der Gedanken ist ein denkenloses Denken darum denke nicht gedacht zu haben")
-	fields := graphql.Fields{
-		"hello": &graphql.Field{
-			Type: graphql.String,
-			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				return "world", nil
-			},
-		},
-	}
-	rootQuery := graphql.ObjectConfig{Name: "RootQuery", Fields: fields}
-	schemaConfig := graphql.SchemaConfig{Query: graphql.NewObject(rootQuery)}
-	schema, err := graphql.NewSchema(schemaConfig)
-	if err != nil {
-		log.Fatalf("failed to create new schema, error: %v", err)
+
+	if &schema == nil {
+		initializeScheme()
 	}
 
 	// Query
