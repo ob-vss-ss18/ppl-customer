@@ -41,6 +41,6 @@ func Incoming(res http.ResponseWriter, req *http.Request) {
 		log.Fatalf("failed to execute graphql operation, errors: %+v", r.Errors)
 	}
 	rJSON, _ := json.Marshal(r)
-	fmt.Fprintln(res, "%s \n", rJSON)
+	fmt.Fprintf(res, "%s \n", rJSON)
 	//fmt.Printf("%s \n", rJSON) // {“data”:{“hello”:”world”}}
 }
