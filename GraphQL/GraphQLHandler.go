@@ -2,7 +2,6 @@ package GraphQL
 
 import (
 	"net/http"
-	"fmt"
 	"github.com/graphql-go/graphql"
 	"github.com/graphql-go/handler"
 
