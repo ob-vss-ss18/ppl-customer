@@ -3,27 +3,30 @@ package main
 import (
 	"net/http"
 	"os"
-	"github.com/ob-vss-ss18/ppl-customer/GraphQL"
-
+	"github.com/graphql-go/handler"
 )
 
-func main(){
+func main() {
+	// Initialize Data
+	InitializeUserDB()
 
-	http.Handle("/query", GraphQL.InitHandler())
+	// Start HTTP Server
+	handle := handler.New(&handler.Config{
+		Schema: &UserSchema,
+		Pretty: true,
+		GraphiQL: true,
+	})
+	http.Handle("/query", handle)
 
 	//for local debugging
-	//err := http.ListenAndServe(":5000", GraphQL.InitHandler())
+	//err := http.ListenAndServe(":5000", nil)
 
 	//for heroku  usage
 	err := http.ListenAndServe(":"+os.Getenv("PORT"), nil)
+
+
 	if err != nil {
 		panic(err)
 	}
 
-
 }
-
-
-
-
-
