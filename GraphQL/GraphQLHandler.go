@@ -17,6 +17,21 @@ var	schema graphql.Schema
 
 func Test(res http.ResponseWriter, req *http.Request) {
 	fmt.Fprintln(res, "Hello Heroku!")
+
+	if req.Method == "POST" && req.Header.Get("Content-Type") == "application/graphql"{
+		fields := graphql.Fields{
+			"Hello": &graphql.Field{
+				Type: graphql.String,
+				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					return "WORLD", nil
+				},
+			},
+		}
+		rootQuery := graphql.ObjectConfig{Name: "RootQuery", Fields: fields}
+		schema.AppendType(graphql.NewObject(rootQuery))
+
+	}
+
 }
 
 func initializeScheme() {
@@ -30,19 +45,12 @@ func initializeScheme() {
 				return "world", nil
 			},
 		},
-
-		"Hello":&graphql.Field{
-			Type:graphql.String,
-			Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-				return "WORLD", nil
-			},
-		},
-
 	}
 
 
 	rootQuery := graphql.ObjectConfig{Name: "RootQuery", Fields: fields}
 	schemaConfig := graphql.SchemaConfig{Query: graphql.NewObject(rootQuery)}
+
 	var err error
 	schema, err = graphql.NewSchema(schemaConfig)
 
@@ -74,6 +82,7 @@ func Incoming(res http.ResponseWriter, req *http.Request) {
 		{
 			hello
 		}
+
 	`
 	params := graphql.Params{Schema: schema, RequestString: query}
 
