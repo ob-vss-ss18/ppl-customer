@@ -21,18 +21,7 @@ func initializeScheme() {
 				return "world", nil
 			},
 		},
-
-		"bye": &graphql.Field{
-
-			Name:              "",
-			Type:              graphql.String,
-			Args:              nil,
-			Resolve:          func(p graphql.ResolveParams) (interface{}, error) {return Goodbye(), nil},
-			DeprecationReason: "",
-			Description:       "",
-		},
 	}
-
 
 	rootQuery := graphql.ObjectConfig{Name: "RootQuery", Fields: fields}
 	schemaConfig := graphql.SchemaConfig{Query: graphql.NewObject(rootQuery)}
