@@ -8,16 +8,11 @@ import (
 	"os"
 )
 
-var (
-	//URI to connect to the postgress database, requires a user and a password input
-	DB_URI_FORMAT string = "postgres://%s:%s@ec2-46-137-109-220.eu-west-1.compute.amazonaws.com:5432/d4ppp9g29cefd9"
-)
+
 
 
 func main() {
-	dbUser := os.Getenv("DB_USER")
-	dbPass := os.Getenv("DB_PASSWORD")
-	connStr := fmt.Sprintf(DB_URI_FORMAT, dbUser, dbPass)
+	connStr := os.Getenv("DATABASE_URL")
 	db, err := sql.Open("postgres", connStr)
 	panicErr(err)
 	panicErr(db.Ping()) //Open does not check the connection
