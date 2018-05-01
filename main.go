@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"os"
 	"github.com/graphql-go/handler"
+	"fmt"
 )
 
 func main() {
@@ -18,6 +19,8 @@ func main() {
 	})
 	http.Handle("/query", handle)
 
+	http.HandleFunc("/", hello)
+
 	//for local debugging
 	//err := http.ListenAndServe(":5000", nil)
 
@@ -29,4 +32,9 @@ func main() {
 		panic(err)
 	}
 
+}
+
+
+func hello(res http.ResponseWriter, req *http.Request) {
+	fmt.Fprintln(res, "Hello World!")
 }
