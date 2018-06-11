@@ -37,11 +37,7 @@ const (
 
 func Insert(customer *Customer) {
 
-	connStr := os.Getenv("DATABASE_URL")
-	db, err := sql.Open("postgres", connStr)
-	panicErr(err)
-	panicErr(db.Ping()) //Open does not check the connection
-	defer db.Close()
+	db, err := openDatabaseConnection()
 
 	//create table if it doesn't exist
 	_,err = db.Query("CREATE TABLE IF NOT EXISTS customers (id PRIMARY  KEY, name text NOT NULL, surname text NOT NULL,street text NOT NULL, number integer NOT NULL,zipcode integer NOT NULL,city text NOT NULL,skill integer NOT NULL,email text NOT NULL,telephone text NOT NULL,birthday date NOT NULL)")
@@ -59,17 +55,13 @@ func Insert(customer *Customer) {
 	defer rows.Close()
 
 	//additional
-	printDatabase(rows);
+	printDatabaseContent(rows);
 
 }
 
 func Remove(customer *Customer) {
 
-	connStr := os.Getenv("DATABASE_URL")
-	db, err := sql.Open("postgres", connStr)
-	panicErr(err)
-	panicErr(db.Ping()) //Open does not check the connection
-	defer db.Close()
+	db, err := openDatabaseConnection()
 
 	//remove users
 	_,err = db.Query("DELETE FROM customers WHERE id=customer.id");
@@ -81,16 +73,12 @@ func Remove(customer *Customer) {
 	defer rows.Close()
 
 	//additional
-	printDatabase(rows);
+	printDatabaseContent(rows);
 }
 
 func Update(customer *Customer) {
 
-	connStr := os.Getenv("DATABASE_URL")
-	db, err := sql.Open("postgres", connStr)
-	panicErr(err)
-	panicErr(db.Ping()) //Open does not check the connection
-	defer db.Close()
+	db, err := openDatabaseConnection()
 
 	// update user in database
 	_,err = db.Query("UPDATE customers SET name=customer.name, surname=customer.surname,street=customer.address.street,number=customer.address.number,zipcode=customer.address.zipcode,city=customer.address.city,skill=customer.skill,email=customer.email,telephone=customer.telephone,birthday=customer.birthday WHERE id = customer.id;");
@@ -102,10 +90,21 @@ func Update(customer *Customer) {
 	defer rows.Close()
 
 	//additional
-	printDatabase(rows);
+	printDatabaseContent(rows);
 }
 
-func printDatabase(rows *sql.Rows){
+func openDatabaseConnection() (*sql.DB, error){
+
+	connStr := os.Getenv("DATABASE_URL")
+	db, err := sql.Open("postgres", connStr)
+	panicErr(err)
+	panicErr(db.Ping()) //Open does not check the connection
+	defer db.Close()
+
+	return db,err
+}
+
+func printDatabaseContent(rows *sql.Rows){
 
 	for  rows.Next(){
 		var (
