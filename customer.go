@@ -35,9 +35,18 @@ const (
 	PRO Skill = 2
 )
 
+func main(){
+	chingling := Customer{5,"ching","ling",Address{"xia lu",94134,1345,"peking"},Skill(0),"Cingling@chingchongchang.co.cn","+12349153",time.Date(1990,01,15,00,00,00,00,nil)}
+	Insert(&chingling)
+}
+
 func Insert(customer *Customer) {
 
-	db, err := openDatabaseConnection()
+	connStr := os.Getenv("DATABASE_URL")
+	db, err := sql.Open("postgres", connStr)
+	panicErr(err)
+	panicErr(db.Ping()) //Open does not check the connection
+	defer db.Close()
 
 	//create table if it doesn't exist
 	_,err = db.Query("CREATE TABLE IF NOT EXISTS customers (id PRIMARY  KEY, name text NOT NULL, surname text NOT NULL,street text NOT NULL, number integer NOT NULL,zipcode integer NOT NULL,city text NOT NULL,skill integer NOT NULL,email text NOT NULL,telephone text NOT NULL,birthday date NOT NULL)")
@@ -61,7 +70,11 @@ func Insert(customer *Customer) {
 
 func Remove(customer *Customer) {
 
-	db, err := openDatabaseConnection()
+	connStr := os.Getenv("DATABASE_URL")
+	db, err := sql.Open("postgres", connStr)
+	panicErr(err)
+	panicErr(db.Ping()) //Open does not check the connection
+	defer db.Close()
 
 	//remove users
 	_,err = db.Query("DELETE FROM customers WHERE id=customer.id");
@@ -78,7 +91,11 @@ func Remove(customer *Customer) {
 
 func Update(customer *Customer) {
 
-	db, err := openDatabaseConnection()
+	connStr := os.Getenv("DATABASE_URL")
+	db, err := sql.Open("postgres", connStr)
+	panicErr(err)
+	panicErr(db.Ping()) //Open does not check the connection
+	defer db.Close()
 
 	// update user in database
 	_,err = db.Query("UPDATE customers SET name=customer.name, surname=customer.surname,street=customer.address.street,number=customer.address.number,zipcode=customer.address.zipcode,city=customer.address.city,skill=customer.skill,email=customer.email,telephone=customer.telephone,birthday=customer.birthday WHERE id = customer.id;");
@@ -91,17 +108,6 @@ func Update(customer *Customer) {
 
 	//additional
 	printDatabaseContent(rows);
-}
-
-func openDatabaseConnection() (*sql.DB, error){
-
-	connStr := os.Getenv("DATABASE_URL")
-	db, err := sql.Open("postgres", connStr)
-	panicErr(err)
-	panicErr(db.Ping()) //Open does not check the connection
-	defer db.Close()
-
-	return db,err
 }
 
 func printDatabaseContent(rows *sql.Rows){
