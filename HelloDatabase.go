@@ -1,7 +1,7 @@
 package main
 
 import (
-	_ "github.com/lib/pq"
+	_"github.com/lib/pq"
 	"database/sql"
 	"fmt"
 	"log"
@@ -23,7 +23,7 @@ func main() {
 	panicErr(err)
 
 	// Add a user to it
-	_,err = db.Query("INSERT INTO example(id,name) VALUES($1,$2)", 1,"Hans")
+	_,err = db.Query("INSERT INTO example(id,name) VALUES($1,$2)", 2,"Hans")
 	panicErr(err)
 
 	rows, err := db.Query("SELECT * FROM example")
