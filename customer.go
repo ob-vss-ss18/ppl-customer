@@ -2,8 +2,9 @@ package main
 
 import (
 	"time"
-	"os"
+	_"github.com/lib/pq"
 	"database/sql"
+	"os"
 	"log"
 	"fmt"
 )
@@ -35,21 +36,21 @@ const (
 	PRO Skill = 2
 )
 
+/*This was used for testing purposes
 func main(){
-	chingling := Customer{5,"ching","ling",Address{"xia lu",94134,1345,"peking"},Skill(0),"Cingling@chingchongchang.co.cn","+12349153",time.Date(1990,01,15,00,00,00,00,nil)}
-	Insert(&chingling)
+	//chingling := Customer{6,"chingchung","ling",Address{"xia lu",94134,1345,"peking"},Skill(0),"Cingling@chingchongchang.co.cn","+12349153",time.Date(1990,time.January,15,00,00,00,00,time.UTC)}
+	//Insert(&chingling)
+	//Remove(&chingling)
+	//Update(&chingling)
 }
+*/
 
 func Insert(customer *Customer) {
 
-	connStr := os.Getenv("DATABASE_URL")
-	db, err := sql.Open("postgres", connStr)
-	panicErr(err)
-	panicErr(db.Ping()) //Open does not check the connection
-	defer db.Close()
+	db, err := openDatabase()
 
 	//create table if it doesn't exist
-	_,err = db.Query("CREATE TABLE IF NOT EXISTS customers (id PRIMARY  KEY, name text NOT NULL, surname text NOT NULL,street text NOT NULL, number integer NOT NULL,zipcode integer NOT NULL,city text NOT NULL,skill integer NOT NULL,email text NOT NULL,telephone text NOT NULL,birthday date NOT NULL)")
+	_,err = db.Query("CREATE TABLE IF NOT EXISTS customers (id serial PRIMARY KEY, name text NOT NULL, surname text NOT NULL,street text NOT NULL, number integer NOT NULL,zipcode integer NOT NULL,city text NOT NULL,skill integer NOT NULL,email text NOT NULL,telephone text NOT NULL,birthday date NOT NULL)")
 	panicErr(err)
 
 	// Add a user to it
@@ -64,20 +65,16 @@ func Insert(customer *Customer) {
 	defer rows.Close()
 
 	//additional
-	printDatabaseContent(rows);
+	closeDatabase(db,rows);
 
 }
 
 func Remove(customer *Customer) {
 
-	connStr := os.Getenv("DATABASE_URL")
-	db, err := sql.Open("postgres", connStr)
-	panicErr(err)
-	panicErr(db.Ping()) //Open does not check the connection
-	defer db.Close()
+	db, err := openDatabase()
 
 	//remove users
-	_,err = db.Query("DELETE FROM customers WHERE id=customer.id");
+	_,err = db.Query("DELETE FROM customers WHERE id=$1;", customer.id);
 	panicErr(err)
 
 	rows, err := db.Query("SELECT * FROM customers")
@@ -86,19 +83,17 @@ func Remove(customer *Customer) {
 	defer rows.Close()
 
 	//additional
-	printDatabaseContent(rows);
+	closeDatabase(db,rows);
 }
 
 func Update(customer *Customer) {
 
-	connStr := os.Getenv("DATABASE_URL")
-	db, err := sql.Open("postgres", connStr)
-	panicErr(err)
-	panicErr(db.Ping()) //Open does not check the connection
-	defer db.Close()
+	db, err := openDatabase()
 
 	// update user in database
-	_,err = db.Query("UPDATE customers SET name=customer.name, surname=customer.surname,street=customer.address.street,number=customer.address.number,zipcode=customer.address.zipcode,city=customer.address.city,skill=customer.skill,email=customer.email,telephone=customer.telephone,birthday=customer.birthday WHERE id = customer.id;");
+	_,err = db.Query("UPDATE customers SET name=$2, surname=$3,street=$4 ,number=$5,zipcode=$6,city=$7,skill=$8,email=$9,telephone=$10,birthday=$11 WHERE id = $1;",
+		customer.id, customer.name, customer.surname, customer.address.street, customer.address.number, customer.address.zipcode,
+		customer.address.city, customer.skill, customer.email, customer.telephone, customer.birthday);
 	panicErr(err)
 
 	rows, err := db.Query("SELECT * FROM customers")
@@ -107,10 +102,19 @@ func Update(customer *Customer) {
 	defer rows.Close()
 
 	//additional
-	printDatabaseContent(rows);
+	closeDatabase(db,rows);
 }
 
-func printDatabaseContent(rows *sql.Rows){
+func openDatabase() (*sql.DB,error){
+	connStr := os.Getenv("DATABASE_URL")
+	db, err := sql.Open("postgres", connStr)
+	panicErr(err)
+	panicErr(db.Ping()) //Open does not check the connection
+
+	return db,err
+}
+
+func closeDatabase(db *sql.DB, rows *sql.Rows){
 
 	for  rows.Next(){
 		var (
@@ -130,5 +134,13 @@ func printDatabaseContent(rows *sql.Rows){
 			log.Fatal(err)
 		}
 		fmt.Printf("id: %s, name: %s, surname: %s,street: %s,number: %s,zipcode: %s,city: %s,skill: %s,email: %s,telephone: %s,birthday: %s\n", id, name,surname,street,number,zipcode,city,skill,email,telephone,birthday)
+	}
+
+	defer db.Close()
+}
+
+func panicErr(err error){
+	if err != nil{
+		panic(err)
 	}
 }
