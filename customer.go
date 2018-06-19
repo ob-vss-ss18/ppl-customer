@@ -7,6 +7,8 @@ import (
 	"os"
 	"log"
 	"fmt"
+	//_"math/rand"
+	"math/rand"
 )
 
 type Skill int
@@ -36,30 +38,46 @@ const (
 	PRO Skill = 2
 )
 
-/*This was used for testing purposes
+//This was used for testing purposes
 func main(){
-	//chingling := Customer{6,"chingchung","ling",Address{"xia lu",94134,1345,"peking"},Skill(0),"Cingling@chingchongchang.co.cn","+12349153",time.Date(1990,time.January,15,00,00,00,00,time.UTC)}
-	//Insert(&chingling)
+	chingling := Customer{6,"chingchung","ling",Address{"xia lu",94134,1345,"peking"},Skill(0),"Cingling@chingchongchang.co.cn","+12349153",time.Date(1990,time.January,15,00,00,00,00,time.UTC)}
+	Insert(&chingling)
 	//Remove(&chingling)
 	//Update(&chingling)
 }
-*/
 
-func Insert(customer *Customer) {
 
+func Insert(customer *Customer) int{
 	db, err := openDatabase()
 
-	//create table if it doesn't exist
+	//generate customer id
+	_, err = db.Query("CREATE TABLE IF NOT EXISTS idNumbers (id serial primary key)")
+	rows, err := db.Query("SELECT id FROM idNumbers")
+	var iteratedIdPart int
+
+	rows.Next()
+	rows.Scan(&iteratedIdPart)
+
+	//define seed for random numbers
+	seedSource := rand.NewSource(time.Now().UnixNano())
+	randSeed := rand.New(seedSource)
+
+	id := 1000000 + (iteratedIdPart * 100) + randSeed.Intn(99)
+
+	_,err = db.Query("UPDATE idNumbers SET id=$1",iteratedIdPart + 1)
+
+
+	//create customer database if not existent
 	_,err = db.Query("CREATE TABLE IF NOT EXISTS customers (id serial PRIMARY KEY, name text NOT NULL, surname text NOT NULL,street text NOT NULL, number integer NOT NULL,zipcode integer NOT NULL,city text NOT NULL,skill integer NOT NULL,email text NOT NULL,telephone text NOT NULL,birthday date NOT NULL)")
 	panicErr(err)
 
-	// Add a user to it
+	// Add a customer to it
 	_,err = db.Query("INSERT INTO customers(id,name,surname,street, number,zipcode,city,skill,email,telephone,birthday) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)",
-		customer.id, customer.name, customer.surname, customer.address.street, customer.address.number, customer.address.zipcode,
+		id, customer.name, customer.surname, customer.address.street, customer.address.number, customer.address.zipcode,
 		customer.address.city, customer.skill, customer.email, customer.telephone, customer.birthday);
 	panicErr(err)
 
-	rows, err := db.Query("SELECT * FROM customers")
+	rows, err = db.Query("SELECT * FROM customers")
 	panicErr(err)
 
 	defer rows.Close()
@@ -67,6 +85,7 @@ func Insert(customer *Customer) {
 	//additional
 	closeDatabase(db,rows);
 
+	return id;
 }
 
 func Remove(customer *Customer) {
