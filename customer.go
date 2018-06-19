@@ -22,7 +22,6 @@ type Customer struct{
 	email string
 	telephone string
 	birthday time.Time
-
 }
 
 type Address struct{
@@ -38,21 +37,58 @@ const (
 	PRO Skill = 2
 )
 
-//This was used for testing purposes
+//This was used for quick testing purposes
 func main(){
-	chingling := Customer{6,"chingchung","ling",Address{"xia lu",94134,1345,"peking"},Skill(0),"Cingling@chingchongchang.co.cn","+12349153",time.Date(1990,time.January,15,00,00,00,00,time.UTC)}
-	Insert(&chingling)
+	//chingling := Customer{6,"chingchung","ling",Address{"xia lu",94134,1345,"peking"},Skill(0),"Cingling@chingchongchang.co.cn","+12349153",time.Date(1990,time.January,15,00,00,00,00,time.UTC)}
+	//Insert(&chingling)
 	//Remove(&chingling)
 	//Update(&chingling)
+	//SelectAll()
+}
+
+func SelectAll() map[int]Customer{
+
+	db, err := openDatabase()
+	rows, err := db.Query("SELECT * FROM customers")
+	panicErr(err)
+
+	customers := make(map[int]Customer)
+
+	for  rows.Next(){
+		var (
+			id int
+			name string
+			surname string
+			street string
+			number int
+			zipcode int
+			city string
+			skill int
+			email string
+			telephone string
+			birthday time.Time
+		)
+		if err := rows.Scan(&id,&name,&surname,&street,&number,&zipcode,&city,&skill,&email,&telephone,&birthday); err != nil {
+			log.Fatal(err)
+		}
+
+		customers[id] = Customer{id,name,surname,Address{street,number,zipcode,city},Skill(skill),email,telephone,birthday}
+	}
+
+	return customers
 }
 
 
-func Insert(customer *Customer) int{
+func Insert(name string, surname string,  street string, number int, zipcode int, city string, skill int, email string, telephone string, birthday time.Time) int{
 	db, err := openDatabase()
 
 	//generate customer id
 	_, err = db.Query("CREATE TABLE IF NOT EXISTS idNumbers (id serial primary key)")
+	panicErr(err)
+
 	rows, err := db.Query("SELECT id FROM idNumbers")
+	panicErr(err)
+
 	var iteratedIdPart int
 
 	rows.Next()
@@ -68,13 +104,12 @@ func Insert(customer *Customer) int{
 
 
 	//create customer database if not existent
-	_,err = db.Query("CREATE TABLE IF NOT EXISTS customers (id serial PRIMARY KEY, name text NOT NULL, surname text NOT NULL,street text NOT NULL, number integer NOT NULL,zipcode integer NOT NULL,city text NOT NULL,skill integer NOT NULL,email text NOT NULL,telephone text NOT NULL,birthday date NOT NULL)")
+	_,err = db.Query("CREATE TABLE IF NOT EXISTS customers (id serial PRIMARY KEY, name text NOT NULL, surname text NOT NULL,street text NOT NULL, number integer NOT NULL,zipcode integer NOT NULL,city text NOT NULL,skill integer NOT NULL,email text NOT NULL,telephone text NOT NULL,birthday text NOT NULL)")
 	panicErr(err)
 
 	// Add a customer to it
 	_,err = db.Query("INSERT INTO customers(id,name,surname,street, number,zipcode,city,skill,email,telephone,birthday) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)",
-		id, customer.name, customer.surname, customer.address.street, customer.address.number, customer.address.zipcode,
-		customer.address.city, customer.skill, customer.email, customer.telephone, customer.birthday);
+		id, name, surname, street, number, zipcode, city, skill, email, telephone, birthday);
 	panicErr(err)
 
 	rows, err = db.Query("SELECT * FROM customers")
