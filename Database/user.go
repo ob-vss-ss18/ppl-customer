@@ -94,45 +94,6 @@ func InitializeUserDB() {
 		},
 	})
 
-	queryType := graphql.NewObject(graphql.ObjectConfig{
-		Name: "Query",
-		Fields: graphql.Fields{
-			"user": &graphql.Field{
-				Type: userType,
-				Args: graphql.FieldConfigArgument{
-					"id": &graphql.ArgumentConfig{
-						Description: "id of the user",
-						Type:        graphql.NewNonNull(graphql.Int),
-					},
-				},
-				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-					id := p.Args["id"].(int)
-					return GetUser(id), nil
-				},
-			},
-			"users": &graphql.Field{
-				Type: graphql.NewList(userType),
-				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-					// Users are a map, but we need a list!
-					userSlice := make([]User, len(Users))
-					idx := 0
-					for  _, user := range Users {
-						userSlice[idx] = user
-						idx++
-					}
-					return userSlice, nil
-				},
-			},
-		},
-	})
-	UserSchema, _ = graphql.NewSchema(graphql.SchemaConfig{
-		Query: queryType,
-	})
+
 }
 
-func GetUser(id int) User {
-	if user, ok := Users[id]; ok {
-		return user
-	}
-	return User{}
-}

@@ -9,9 +9,15 @@ import (
 	"fmt"
 	//_"math/rand"
 	"math/rand"
+	"github.com/graphql-go/graphql"
 )
 
 type Skill int
+
+var(
+	customerSchema graphql.Schema
+	customerType *graphql.Object
+)
 
 type Customer struct{
 	id int
@@ -69,13 +75,170 @@ func SelectAll() map[int]Customer{
 	return customers
 }
 
+func InitializeCustomerDB() {
 
-func Insert(name string, surname string,  street string, number int, zipcode int, city string, skill int, email string, telephone string, birthday time.Time) int{
+	err := InitializeTables()
+	panicErr(err)
+
+
+
+
+}
+
+func defineCustomerObject() {
+	customerType = graphql.NewObject(graphql.ObjectConfig{
+		Name:        "Customer",
+		Description: "A customer of the company.",
+		Fields: graphql.Fields{
+			"id": &graphql.Field{
+				Type:        graphql.NewNonNull(graphql.Int),
+				Description: "The id of the customer.",
+				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					// ToDo: How does this Source work exactly? O_o
+					customer, ok := p.Source.(Customer);
+					if ok {
+						return customer.id, nil
+					}
+					return nil, nil
+				},
+			},
+			"name": &graphql.Field{
+				Type:        graphql.String,
+				Description: "The name of the customer.",
+				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					customer, ok := p.Source.(Customer);
+					if ok {
+						return customer.name, nil
+					}
+					return nil, nil
+				},
+			},
+			"surname": &graphql.Field{
+				Type:        graphql.String,
+				Description: "The name of the customer.",
+				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					customer, ok := p.Source.(Customer);
+					if ok {
+						return customer.name, nil
+					}
+					return nil, nil
+				},
+			},"address": &graphql.Field{
+				Type:        graphql.String,
+				Description: "The name of the customer.",
+				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					customer, ok := p.Source.(Customer);
+					if ok {
+						return customer.name, nil
+					}
+					return nil, nil
+				},
+			},"skill": &graphql.Field{
+				Type:        graphql.String,
+				Description: "The name of the customer.",
+				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					customer, ok := p.Source.(Customer);
+					if ok {
+						return customer.name, nil
+					}
+					return nil, nil
+				},
+			},"email": &graphql.Field{
+				Type:        graphql.String,
+				Description: "The name of the customer.",
+				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					customer, ok := p.Source.(Customer);
+					if ok {
+						return customer.name, nil
+					}
+					return nil, nil
+				},
+			},"telephone": &graphql.Field{
+				Type:        graphql.String,
+				Description: "The name of the customer.",
+				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					customer, ok := p.Source.(Customer);
+					if ok {
+						return customer.name, nil
+					}
+					return nil, nil
+				},
+			},"birthday": &graphql.Field{
+				Type:        graphql.String,
+				Description: "The name of the customer.",
+				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					customer, ok := p.Source.(Customer);
+					if ok {
+						return customer.name, nil
+					}
+					return nil, nil
+				},
+			},
+		},
+	})
+}
+
+func defineCustomerSchema() {
+	queryType := graphql.NewObject(graphql.ObjectConfig{
+		Name: "Query",
+		Fields: graphql.Fields{
+			"customer": &graphql.Field{
+				Type: customerType,
+				Args: graphql.FieldConfigArgument{
+					//Do we need only id?? its to get the whole user, but maybe some selections would be good at customers
+					"id": &graphql.ArgumentConfig{
+						Description: "id of the user",
+						Type:        graphql.NewNonNull(graphql.Int),
+					},
+
+				},
+				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					id := p.Args["id"].(int)
+					//return GetUser(id), nil
+					return id, nil
+				},
+			},
+			"customers": &graphql.Field{
+				Type: graphql.NewList(customerType),
+				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					// Users are a map, but we need a list!
+					userSlice := make([]User, len(Users))
+					idx := 0
+					for  _, user := range Users {
+						userSlice[idx] = user
+						idx++
+					}
+					return userSlice, nil
+				},
+			},
+		},
+	})
+	customerSchema, _ = graphql.NewSchema(graphql.SchemaConfig{
+		Query: queryType,
+	})
+}
+
+func InitializeTables() (error) {
+
 	db, err := openDatabase()
 
 	//generate customer id
 	_, err = db.Query("CREATE TABLE IF NOT EXISTS idNumbers (id serial primary key)")
 	panicErr(err)
+
+	closeDatabase(db,nil);
+
+	return err;
+}
+
+
+func Insert(name string, surname string,  street string, number int, zipcode int, city string, skill int, email string, telephone string, birthday time.Time) int{
+	db, err := openDatabase()
+
+	//moved to InitializeTables
+	//generate customer id
+	//_, err = db.Query("CREATE TABLE IF NOT EXISTS idNumbers (id serial primary key)")
+	//panicErr(err)
 
 	rows, err := db.Query("SELECT id FROM idNumbers")
 	panicErr(err)
