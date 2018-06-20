@@ -178,7 +178,7 @@ func closeDatabase(db *sql.DB, rows *sql.Rows){
 		if err := rows.Scan(&id,&name,&surname,&street,&number,&zipcode,&city,&skill,&email,&telephone,&birthday); err != nil {
 			log.Fatal(err)
 		}
-		fmt.Printf("id: %s, name: %s, surname: %s,street: %s,number: %s,zipcode: %s,city: %s,skill: %s,email: %s,telephone: %s,birthday: %s\n", id, name,surname,street,number,zipcode,city,skill,email,telephone,birthday)
+		fmt.Printf("id: %s, name: %s, surname: %s,street: %s,number: %d,zipcode: %d,city: %s,skill: %d,email: %s,telephone: %s,birthday: %s\n", id, name,surname,street,number,zipcode,city,skill,email,telephone,birthday)
 	}
 
 	defer db.Close()
