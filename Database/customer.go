@@ -37,15 +37,6 @@ const (
 	PRO Skill = 2
 )
 
-//This was used for quick testing purposes
-func main(){
-	//chingling := Customer{6,"chingchung","ling",Address{"xia lu",94134,1345,"peking"},Skill(0),"Cingling@chingchongchang.co.cn","+12349153",time.Date(1990,time.January,15,00,00,00,00,time.UTC)}
-	//Insert(&chingling)
-	//Remove(&chingling)
-	//Update(&chingling)
-	//SelectAll()
-}
-
 func SelectAll() map[int]Customer{
 
 	db, err := openDatabase()
