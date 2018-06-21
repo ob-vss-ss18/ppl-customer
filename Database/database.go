@@ -117,9 +117,9 @@ func Insert(name string, surname string,  street string, number int, zipcode int
 	defer rows.Close()
 
 	//additional
-	closeDatabase(db,rows);
+	closeDatabase(db,rows)
 
-	return id;
+	return id
 }
 
 func Remove(customer *Customer) {
