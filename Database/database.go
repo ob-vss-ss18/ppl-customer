@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"math/rand"
 	"os"
+	_"github.com/lib/pq"
 )
 
 
@@ -61,9 +62,6 @@ func InitializeTables() (error) {
 	panicErr(err)
 
 	//local entry, just something is in de database
-	chingling := Customer{6,"chingchung","ling",Address{"xia lu",94134,1345,"peking"},Skill(0),"Cingling@chingchongchang.co.cn","+12349153",time.Date(1990,time.January,15,00,00,00,00,time.UTC)}
-	InsertCustomer(chingling)
-
 	closeDatabase(db,nil);
 
 	return err;
@@ -176,25 +174,28 @@ func openDatabase() (*sql.DB,error){
 
 func closeDatabase(db *sql.DB, rows *sql.Rows){
 
-	for  rows.Next(){
-		var (
-			id string
-			name string
-			surname string
-			street string
-			number int
-			zipcode int
-			city string
-			skill int
-			email string
-			telephone string
-			birthday string
-		)
-		if err := rows.Scan(&id,&name,&surname,&street,&number,&zipcode,&city,&skill,&email,&telephone,&birthday); err != nil {
-			log.Fatal(err)
+	if(rows != nil){
+		for  rows.Next(){
+			var (
+				id string
+				name string
+				surname string
+				street string
+				number int
+				zipcode int
+				city string
+				skill int
+				email string
+				telephone string
+				birthday string
+			)
+			if err := rows.Scan(&id,&name,&surname,&street,&number,&zipcode,&city,&skill,&email,&telephone,&birthday); err != nil {
+				log.Fatal(err)
+			}
+			fmt.Printf("id: %s, name: %s, surname: %s,street: %s,number: %d,zipcode: %d,city: %s,skill: %d,email: %s,telephone: %s,birthday: %s\n", id, name,surname,street,number,zipcode,city,skill,email,telephone,birthday)
 		}
-		fmt.Printf("id: %s, name: %s, surname: %s,street: %s,number: %d,zipcode: %d,city: %s,skill: %d,email: %s,telephone: %s,birthday: %s\n", id, name,surname,street,number,zipcode,city,skill,email,telephone,birthday)
 	}
+
 
 	defer db.Close()
 }

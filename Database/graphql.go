@@ -2,8 +2,14 @@ package Database
 
 import "github.com/graphql-go/graphql"
 
+var(
+	CustomerSchema graphql.Schema
+	CustomerType *graphql.Object
+	Customers      map[int]Customer
+)
+
 func defineCustomerObject() {
-	customerType = graphql.NewObject(graphql.ObjectConfig{
+	CustomerType = graphql.NewObject(graphql.ObjectConfig{
 		Name:        "Customer",
 		Description: "A customer of the company.",
 		Fields: graphql.Fields{
@@ -100,7 +106,7 @@ func defineCustomerSchema() {
 		Name: "Query",
 		Fields: graphql.Fields{
 			"customer": &graphql.Field{
-				Type: customerType,
+				Type: CustomerType,
 				Args: graphql.FieldConfigArgument{
 					//Do we need only id?? its to get the whole user, but maybe some selections would be good at customers
 					"id": &graphql.ArgumentConfig{
@@ -116,21 +122,21 @@ func defineCustomerSchema() {
 				},
 			},
 			"customers": &graphql.Field{
-				Type: graphql.NewList(customerType),
+				Type: graphql.NewList(CustomerType),
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 					// Users are a map, but we need a list!
-					userSlice := make([]User, len(Users))
+					customerSlice := make([]Customer, len(Customers))
 					idx := 0
-					for  _, user := range Users {
-						userSlice[idx] = user
+					for  _, user := range Customers {
+						customerSlice[idx] = user
 						idx++
 					}
-					return userSlice, nil
+					return customerSlice, nil
 				},
 			},
 		},
 	})
-	customerSchema, _ = graphql.NewSchema(graphql.SchemaConfig{
+	CustomerSchema, _ = graphql.NewSchema(graphql.SchemaConfig{
 		Query: queryType,
 	})
 }

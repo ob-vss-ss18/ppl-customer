@@ -13,7 +13,7 @@ func main() {
 
 	// Start HTTP Server
 	handle := handler.New(&handler.Config{
-		Schema: &Database.UserSchema,
+		Schema: &Database.CustomerSchema,
 		Pretty: true,
 		GraphiQL: true,
 	})

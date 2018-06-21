@@ -2,16 +2,12 @@ package Database
 
 import (
 	"time"
-	_"github.com/lib/pq"
-	"github.com/graphql-go/graphql"
+
 )
 
 type Skill int
 
-var(
-	customerSchema graphql.Schema
-	customerType *graphql.Object
-)
+
 
 type Customer struct{
 	id int
