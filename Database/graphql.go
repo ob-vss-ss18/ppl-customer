@@ -181,6 +181,13 @@ func defineCustomerObject() {
 	})
 }
 
+//mutation {
+//  create(input: {name: "blub", surname: "blub", email: "abc@de.y", telephone: "0128326548", skill: 1, address: {street: "bbb", number: 12, zip: 555662, city: "sagewg"}, birthday:"02-03-1994"}) {
+//    id
+//    name
+//  }
+//}
+
 func defineCustomerSchema() {
 	queryType := graphql.NewObject(graphql.ObjectConfig{
 		Name: "Query",
@@ -223,7 +230,7 @@ func defineCustomerSchema() {
 	})
 
 	createAddress := graphql.NewInputObject(graphql.InputObjectConfig{
-		Name: "CreateCustomer",
+		Name: "CreateAddress",
 		Fields: graphql.InputObjectConfigFieldMap{
 			"street" : &graphql.InputObjectFieldConfig{
 				Type: graphql.NewNonNull(graphql.String),
@@ -240,8 +247,6 @@ func defineCustomerSchema() {
 			},
 		},
 	})
-
-
 	createCustomer := graphql.NewInputObject(graphql.InputObjectConfig{
 		Name: "CreateCustomer",
 		Fields:  graphql.InputObjectConfigFieldMap{
@@ -269,14 +274,16 @@ func defineCustomerSchema() {
 			},
 		},
 	})
+
 	argsCreate := graphql.FieldConfigArgument{
 		"input": &graphql.ArgumentConfig{
 			Description:"An input with the customer details",
 			Type: graphql.NewNonNull(createCustomer),
 		},
 	}
+
 	updateAddress := graphql.NewInputObject(graphql.InputObjectConfig{
-		Name: "CreateCustomer",
+		Name: "UpdateAddress",
 		Fields: graphql.InputObjectConfigFieldMap{
 			"street" : &graphql.InputObjectFieldConfig{
 				Type: graphql.String,
@@ -293,9 +300,8 @@ func defineCustomerSchema() {
 			},
 		},
 	})
-
 	updateCustomer := graphql.NewInputObject(graphql.InputObjectConfig{
-		Name: "CreateCustomer",
+		Name: "UpdateCustomer",
 		Fields:  graphql.InputObjectConfigFieldMap{
 			"id" : &graphql.InputObjectFieldConfig{
 				Type: graphql.NewNonNull(graphql.Int),
@@ -324,60 +330,128 @@ func defineCustomerSchema() {
 			},
 		},
 	})
+
 	argsUpdate := graphql.FieldConfigArgument{
 		"input": &graphql.ArgumentConfig{
 			Description:"An input with the customer details",
 			Type: graphql.NewNonNull(updateCustomer),
 		},
 	}
+
+	removeCustomer := graphql.NewInputObject(graphql.InputObjectConfig{
+		Name: "RemoveCustomer",
+		Fields: graphql.InputObjectConfigFieldMap{
+			"id": &graphql.InputObjectFieldConfig{
+				Type:        graphql.NewNonNull(graphql.Int),
+				Description: "street of the customer",
+			},
+		},
+	})
+
+	argsRemove := graphql.FieldConfigArgument{
+		"input": &graphql.ArgumentConfig{
+			Description:"An input with the customer details",
+			Type: removeCustomer,
+
+		},
+	}
 	mutationType := graphql.NewObject(graphql.ObjectConfig{
 		Name: "Mutation",
 		Fields: graphql.Fields{
-			"create": &graphql.Field{
+			"update": &graphql.Field{
 				Type: CustomerType,
 				Args: argsUpdate,
-				Resolve: func(p graphql.ResolveParams)(interface{}, error){
-					var inp = p.Args["input"].(map[string]interface{})
+				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					var inp= p.Args["input"].(map[string]interface{})
 
-					var addressInp = inp["address"].(map[string]interface{})
+					var addressInp= inp["address"].(map[string]interface{})
 
 					var street, city string
-					var number, zipcode int
-					var address Address
+					var number, zipcode, id int
 
-					if addressInp["street"] != nil{
+					var address Address
+					var customer Customer
+
+					if inp["id"] == nil {
+						return nil, nil
+					} else {
+						id = inp["id"].(int)
+					}
+
+					if addressInp["street"] != nil {
 						street = addressInp["street"].(string)
 					}
-					if addressInp["number"] != nil{
+					if addressInp["number"] != nil {
 						number = addressInp["number"].(int)
 					}
-					if addressInp["zip"] != nil{
+					if addressInp["zip"] != nil {
 						zipcode = addressInp["zip"].(int)
 					}
-					if addressInp["city"] != nil{
+					if addressInp["city"] != nil {
 						city = addressInp["city"].(string)
 					}
 					address = Address{
 
-						street: street,
-						number: number,
+						street:  street,
+						number:  number,
 						zipcode: zipcode,
-						city: city,
+						city:    city,
+					}
+
+					customer.address = address
+
+					if inp["name"] != nil {
+						customer.name = inp["name"].(string);
+					}
+					if inp["surname"] != nil {
+						customer.surname = inp["surname"].(string);
+					}
+					if inp["email"] != nil {
+						customer.email = inp["email"].(string);
+					}
+					if inp["telephone"] != nil {
+						customer.telephone = inp["telephone"].(string);
+					}
+					if inp["skill"] != nil {
+						customer.skill = Skill(inp["skill"].(int));
+					}
+					if inp["birthday"] != nil {
+						birthday, _ := time.ParseInLocation(time.ANSIC, inp["birthday"].(string), time.Local)
+						customer.birthday = birthday
+					}
+
+					Update(&customer)
+
+					return Select(id), nil
+				},
+			},
+
+			"create": &graphql.Field{
+				Type: CustomerType,
+				Args: argsCreate,
+				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					var inp= p.Args["input"].(map[string]interface{})
+
+					var addressInp= inp["address"].(map[string]interface{})
+					address := Address{
+
+						street:  addressInp["street"].(string),
+						number:  addressInp["number"].(int),
+						zipcode: addressInp["zip"].(int),
+						city:    addressInp["city"].(string),
 					}
 
 					//TODO don't know how to parse this correctly
 					birthday, _ := time.ParseInLocation(time.ANSIC, inp["birthday"].(string), time.Local)
 
-
 					customerToCreate := Customer{
-						name: inp["name"].(string),
-						surname: inp["surname"].(string),
-						address: address,
-						skill: Skill(inp["skill"].(int)),
-						email: inp["email"].(string),
+						name:      inp["name"].(string),
+						surname:   inp["surname"].(string),
+						address:   address,
+						skill:     Skill(inp["skill"].(int)),
+						email:     inp["email"].(string),
 						telephone: inp["telephone"].(string),
-						birthday: birthday,
-
+						birthday:  birthday,
 					}
 
 					customerToCreate.id = InsertCustomer(customerToCreate)
@@ -385,38 +459,17 @@ func defineCustomerSchema() {
 				},
 			},
 
-		"update": &graphql.Field{
+			"remove": &graphql.Field{
 				Type: CustomerType,
-				Args:argsCreate,
-				Resolve: func(p graphql.ResolveParams)(interface{}, error){
+				Args: argsRemove,
+				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 					var inp = p.Args["input"].(map[string]interface{})
 
-					var addressInp = inp["address"].(map[string]interface{})
-					address := Address{
+					customer := Select(inp["id"].(int))
 
-						street: addressInp["street"].(string),
-						number: addressInp["number"].(int),
-						zipcode: addressInp["zip"].(int),
-						city: addressInp["city"].(string),
-					}
+					Remove(&customer)
 
-					//TODO don't know how to parse this correctly
-					birthday, _ := time.ParseInLocation(time.ANSIC, inp["birthday"].(string), time.Local)
-
-
-					customerToCreate := Customer{
-						name: inp["name"].(string),
-						surname: inp["surname"].(string),
-						address: address,
-						skill: Skill(inp["skill"].(int)),
-						email: inp["email"].(string),
-						telephone: inp["telephone"].(string),
-						birthday: birthday,
-
-					}
-
-					customerToCreate.id = InsertCustomer(customerToCreate)
-					return customerToCreate, nil
+					return customer, nil
 				},
 			},
 		},
