@@ -12,13 +12,8 @@ import (
 
 
 func InitializeCustomerDB() {
-
 	err := InitializeTables()
 	panicErr(err)
-
-
-
-
 }
 
 func SelectAll() map[int]Customer{

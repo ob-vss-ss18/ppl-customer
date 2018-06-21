@@ -9,6 +9,7 @@ import (
 
 func main() {
 	// Initialize Data
+	Database.InitGraphQL()
 	Database.InitializeCustomerDB()
 
 	// Start HTTP Server

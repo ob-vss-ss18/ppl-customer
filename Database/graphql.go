@@ -1,14 +1,91 @@
 package Database
 
-import "github.com/graphql-go/graphql"
+import (
+	"github.com/graphql-go/graphql"
+
+)
 
 var(
 	CustomerSchema graphql.Schema
 	CustomerType *graphql.Object
+	AddressType *graphql.Object
 	Customers      map[int]Customer
 )
 
+
+
+func InitGraphQL(){
+	defineCustomerObject()
+	defineCustomerSchema()
+}
+
 func defineCustomerObject() {
+	AddressType = graphql.NewObject(graphql.ObjectConfig{
+		Name:        "Address",
+		Description: "An address of a customer",
+		Fields: graphql.Fields{
+			//Maybe we don't need this, please check somebody
+			"address":&graphql.Field{
+				Type:        graphql.NewNonNull(graphql.String),
+				Description: "The address.",
+				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+
+					address, ok := p.Source.(Address)
+					if ok {
+						return address, nil
+					}
+					return nil, nil
+				},
+			},
+			"street": &graphql.Field{
+				Type:        graphql.NewNonNull(graphql.String),
+				Description: "The street of the address.",
+				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+
+					address, ok := p.Source.(Address)
+					if ok {
+						return address.street, nil
+					}
+					return nil, nil
+				},
+			},"number": &graphql.Field{
+				Type:        graphql.NewNonNull(graphql.Int),
+				Description: "The number at the street of the address.",
+				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+
+					address, ok := p.Source.(Address)
+					if ok {
+						return address.number, nil
+					}
+					return nil, nil
+				},
+			},"zip": &graphql.Field{
+				Type:        graphql.NewNonNull(graphql.Int),
+				Description: "The zip code of the address.",
+				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+
+					address, ok := p.Source.(Address)
+					if ok {
+						return address.zipcode, nil
+					}
+					return nil, nil
+				},
+			},"city": &graphql.Field{
+				Type:        graphql.NewNonNull(graphql.String),
+				Description: "The city of the address.",
+				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+
+					address, ok := p.Source.(Address)
+					if ok {
+						return address.city, nil
+					}
+					return nil, nil
+				},
+			},
+		},
+	})
+
+
 	CustomerType = graphql.NewObject(graphql.ObjectConfig{
 		Name:        "Customer",
 		Description: "A customer of the company.",
@@ -47,12 +124,12 @@ func defineCustomerObject() {
 					return nil, nil
 				},
 			},"address": &graphql.Field{
-				Type:        graphql.String,
+				Type:   AddressType,
 				Description: "The name of the customer.",
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-					customer, ok := p.Source.(Customer);
+					customer, ok := p.Source.(Customer)
 					if ok {
-						return customer.name, nil
+						return customer.address, nil
 					}
 					return nil, nil
 				},
@@ -117,9 +194,12 @@ func defineCustomerSchema() {
 				},
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 					id := p.Args["id"].(int)
-					//return GetUser(id), nil
-					return id, nil
+					return Select(id), nil
 				},
+			},
+			"address": &graphql.Field{
+				Type: AddressType,
+
 			},
 			"customers": &graphql.Field{
 				Type: graphql.NewList(CustomerType),
