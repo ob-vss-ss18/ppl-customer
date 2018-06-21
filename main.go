@@ -9,7 +9,7 @@ import (
 
 func main() {
 	// Initialize Data
-	Database.InitializeUserDB()
+	Database.InitializeCustomerDB()
 
 	// Start HTTP Server
 	handle := handler.New(&handler.Config{
@@ -23,6 +23,7 @@ func main() {
 
 	//for local debugging
 	err := http.ListenAndServe(":5000", nil)
+
 
 	//for heroku  usage
 	//err := http.ListenAndServe(":"+os.Getenv("PORT"), nil)

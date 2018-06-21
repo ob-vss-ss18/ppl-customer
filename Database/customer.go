@@ -226,13 +226,31 @@ func InitializeTables() (error) {
 	_, err = db.Query("CREATE TABLE IF NOT EXISTS idNumbers (id serial primary key)")
 	panicErr(err)
 
+	//local entry, just something is in de database
+	chingling := Customer{6,"chingchung","ling",Address{"xia lu",94134,1345,"peking"},Skill(0),"Cingling@chingchongchang.co.cn","+12349153",time.Date(1990,time.January,15,00,00,00,00,time.UTC)}
+	InsertCustomer(chingling)
+
 	closeDatabase(db,nil);
 
 	return err;
 }
 
+//TODO method stub for lukas to fill up
+func Select(id int) Customer{
 
-func Insert(name string, surname string,  street string, number int, zipcode int, city string, skill int, email string, telephone string, birthday time.Time) int{
+	fmt.Printf("%d",id)
+
+	return Customer{6,"chingchung","ling",Address{"xia lu",94134,1345,"peking"},Skill(0),"Cingling@chingchongchang.co.cn","+12349153",time.Date(1990,time.January,15,00,00,00,00,time.UTC)}
+
+}
+
+func InsertCustomer(customer Customer) int{
+
+	return Insert(customer.name, customer.surname, customer.address.street, customer.address.number, customer.address.zipcode, customer.address.city, customer.skill, customer.email, customer.telephone, customer.birthday)
+}
+
+
+func Insert(name string, surname string,  street string, number int, zipcode int, city string, skill Skill, email string, telephone string, birthday time.Time) int{
 	db, err := openDatabase()
 
 	//moved to InitializeTables
