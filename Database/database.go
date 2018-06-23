@@ -90,11 +90,8 @@ func Select(ID int) Customer{
 		birthday time.Time
 	)
 
-	row.Next()
-	err = row.Scan(&id,&name,&surname,&street,&number,&zipcode,&city,&skill,&email,&telephone,&birthday)
-
-	if err != nil {
-		panicErr(err)
+	if row.Next() {
+		row.Scan(&id,&name,&surname,&street,&number,&zipcode,&city,&skill,&email,&telephone,&birthday);
 	}
 
 	customer = Customer{id,name,surname,Address{street,number,zipcode,city},Skill(skill),email,telephone,birthday}
@@ -162,7 +159,7 @@ func Remove(customer *Customer) {
 	defer rows.Close()
 
 	//additional
-	closeDatabase(db,rows);
+	closeDatabase(db,rows)
 }
 
 func Update(customer *Customer) {
