@@ -168,7 +168,7 @@ func openDatabase() (*sql.DB,error){
 
 func closeDatabase(db *sql.DB, rows *sql.Rows){
 
-	if(rows != nil){
+	if rows != nil{
 		for  rows.Next(){
 			var (
 				id string
