@@ -67,11 +67,39 @@ func InitializeTables() (error) {
 }
 
 //TODO method stub for lukas to fill up
-func Select(id int) Customer{
+func Select(ID int) Customer{
 
-	fmt.Printf("%d",id)
+	db, err := openDatabase()
+	row, err := db.Query("SELECT * FROM customers WHERE id = $1", ID)
+	panicErr(err)
+	var customer Customer
 
-	return Customer{6,"chingchung","ling",Address{"xia lu",94134,1345,"peking"},Skill(0),"Cingling@chingchongchang.co.cn","+12349153",time.Date(1990,time.January,15,00,00,00,00,time.UTC)}
+
+
+	var (
+		id int
+		name string
+		surname string
+		street string
+		number int
+		zipcode int
+		city string
+		skill int
+		email string
+		telephone string
+		birthday time.Time
+	)
+
+	row.Next()
+	err = row.Scan(&id,&name,&surname,&street,&number,&zipcode,&city,&skill,&email,&telephone,&birthday)
+
+	if err != nil {
+		panicErr(err)
+	}
+
+	customer = Customer{id,name,surname,Address{street,number,zipcode,city},Skill(skill),email,telephone,birthday}
+
+	return customer
 
 }
 
@@ -79,7 +107,6 @@ func InsertCustomer(customer Customer) int{
 
 	return Insert(customer.name, customer.surname, customer.address.street, customer.address.number, customer.address.zipcode, customer.address.city, customer.skill, customer.email, customer.telephone, customer.birthday)
 }
-
 
 func Insert(name string, surname string,  street string, number int, zipcode int, city string, skill Skill, email string, telephone string, birthday time.Time) int{
 	db, err := openDatabase()

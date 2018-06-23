@@ -362,21 +362,23 @@ func defineCustomerSchema() {
 				Type: CustomerType,
 				Args: argsUpdate,
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-					var inp= p.Args["input"].(map[string]interface{})
-
-					var addressInp= inp["address"].(map[string]interface{})
-
 					var street, city string
 					var number, zipcode, id int
 
 					var address Address
 					var customer Customer
 
+					var inp= p.Args["input"].(map[string]interface{})
+
 					if inp["id"] == nil {
 						return nil, nil
 					} else {
 						id = inp["id"].(int)
 					}
+
+					customer.id = id
+
+					var addressInp= inp["address"].(map[string]interface{})
 
 					if addressInp["street"] != nil {
 						street = addressInp["street"].(string)
@@ -465,7 +467,9 @@ func defineCustomerSchema() {
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 					var inp = p.Args["input"].(map[string]interface{})
 
-					customer := Select(inp["id"].(int))
+					var customer Customer
+
+					customer = Select(inp["id"].(int))
 
 					Remove(&customer)
 
