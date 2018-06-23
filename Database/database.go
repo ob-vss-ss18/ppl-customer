@@ -56,6 +56,10 @@ func InitializeTables() (error) {
 	_, err = db.Query("CREATE TABLE IF NOT EXISTS idNumbers (id serial primary key)")
 	panicErr(err)
 
+	//create customer database if not existent
+	_,err = db.Query("CREATE TABLE IF NOT EXISTS customers (id serial PRIMARY KEY, name text NOT NULL, surname text NOT NULL,street text NOT NULL, number integer NOT NULL,zipcode integer NOT NULL,city text NOT NULL,skill integer NOT NULL,email text NOT NULL,telephone text NOT NULL,birthday text NOT NULL)")
+	panicErr(err)
+
 	//local entry, just something is in de database
 	closeDatabase(db,nil);
 
@@ -101,11 +105,6 @@ func Insert(name string, surname string,  street string, number int, zipcode int
 
 	_,err = db.Query("UPDATE idNumbers SET id=$1",iteratedIdPart + 1)
 
-
-	//create customer database if not existent
-	_,err = db.Query("CREATE TABLE IF NOT EXISTS customers (id serial PRIMARY KEY, name text NOT NULL, surname text NOT NULL,street text NOT NULL, number integer NOT NULL,zipcode integer NOT NULL,city text NOT NULL,skill integer NOT NULL,email text NOT NULL,telephone text NOT NULL,birthday text NOT NULL)")
-	panicErr(err)
-
 	// Add a customer to it
 	_,err = db.Query("INSERT INTO customers(id,name,surname,street, number,zipcode,city,skill,email,telephone,birthday) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)",
 		id, name, surname, street, number, zipcode, city, skill, email, telephone, birthday);
@@ -146,7 +145,7 @@ func Update(customer *Customer) {
 	// update user in database
 	_,err = db.Query("UPDATE customers SET name=$2, surname=$3,street=$4 ,number=$5,zipcode=$6,city=$7,skill=$8,email=$9,telephone=$10,birthday=$11 WHERE id = $1;",
 		customer.id, customer.name, customer.surname, customer.address.street, customer.address.number, customer.address.zipcode,
-		customer.address.city, customer.skill, customer.email, customer.telephone, customer.birthday);
+		customer.address.city, customer.skill, customer.email, customer.telephone, customer.birthday)
 	panicErr(err)
 
 	rows, err := db.Query("SELECT * FROM customers")
