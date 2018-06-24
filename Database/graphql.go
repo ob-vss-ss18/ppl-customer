@@ -211,21 +211,6 @@ func defineCustomerSchema() {
 				Type: AddressType,
 
 			},
-
-			//TODO chris mach da, keine lust :P
-			"customers": &graphql.Field{
-				Type: graphql.NewList(CustomerType),
-				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-					// Users are a map, but we need a list!
-					customerSlice := make([]Customer, len(Customers))
-					idx := 0
-					for  _, user := range Customers {
-						customerSlice[idx] = user
-						idx++
-					}
-					return customerSlice, nil
-				},
-			},
 		},
 	})
 
