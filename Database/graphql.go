@@ -207,10 +207,6 @@ func defineCustomerSchema() {
 					return Select(id), nil
 				},
 			},
-			"address": &graphql.Field{
-				Type: AddressType,
-
-			},
 		},
 	})
 
