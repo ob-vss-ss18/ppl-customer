@@ -8,6 +8,7 @@ import (
 	"math/rand"
 	"os"
 	_"github.com/lib/pq"
+	"errors"
 )
 
 
@@ -67,7 +68,7 @@ func InitializeTables() (error) {
 }
 
 //TODO method stub for lukas to fill up
-func Select(ID int) Customer{
+func Select(ID int) (Customer, error){
 
 	db, err := openDatabase()
 	row, err := db.Query("SELECT * FROM customers WHERE id = $1", ID)
@@ -92,11 +93,13 @@ func Select(ID int) Customer{
 
 	if row.Next() {
 		row.Scan(&id,&name,&surname,&street,&number,&zipcode,&city,&skill,&email,&telephone,&birthday);
+	} else {
+		return customer, errors.New("Id not found!")
 	}
 
 	customer = Customer{id,name,surname,Address{street,number,zipcode,city},Skill(skill),email,telephone,birthday}
 
-	return customer
+	return customer, nil
 
 }
 

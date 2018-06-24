@@ -6,16 +6,14 @@ import (
 	"time"
 )
 
-var(
+var (
 	CustomerSchema graphql.Schema
-	CustomerType *graphql.Object
-	AddressType *graphql.Object
+	CustomerType   *graphql.Object
+	AddressType    *graphql.Object
 	Customers      map[int]Customer
 )
 
-
-
-func InitGraphQL(){
+func InitGraphQL() {
 	defineCustomerObject()
 	defineCustomerSchema()
 }
@@ -26,7 +24,7 @@ func defineCustomerObject() {
 		Description: "An address of a customer",
 		Fields: graphql.Fields{
 			//Maybe we don't need this, please check somebody
-			"address":&graphql.Field{
+			"address": &graphql.Field{
 				Type:        graphql.NewNonNull(graphql.String),
 				Description: "The address.",
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
@@ -49,7 +47,7 @@ func defineCustomerObject() {
 					}
 					return nil, nil
 				},
-			},"number": &graphql.Field{
+			}, "number": &graphql.Field{
 				Type:        graphql.NewNonNull(graphql.Int),
 				Description: "The number at the street of the address.",
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
@@ -60,7 +58,7 @@ func defineCustomerObject() {
 					}
 					return nil, nil
 				},
-			},"zip": &graphql.Field{
+			}, "zip": &graphql.Field{
 				Type:        graphql.NewNonNull(graphql.Int),
 				Description: "The zip code of the address.",
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
@@ -71,7 +69,7 @@ func defineCustomerObject() {
 					}
 					return nil, nil
 				},
-			},"city": &graphql.Field{
+			}, "city": &graphql.Field{
 				Type:        graphql.NewNonNull(graphql.String),
 				Description: "The city of the address.",
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
@@ -85,7 +83,6 @@ func defineCustomerObject() {
 			},
 		},
 	})
-
 
 	CustomerType = graphql.NewObject(graphql.ObjectConfig{
 		Name:        "Customer",
@@ -124,8 +121,8 @@ func defineCustomerObject() {
 					}
 					return nil, nil
 				},
-			},"address": &graphql.Field{
-				Type:   AddressType,
+			}, "address": &graphql.Field{
+				Type:        AddressType,
 				Description: "The address of the customer.",
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 					customer, ok := p.Source.(Customer)
@@ -134,7 +131,7 @@ func defineCustomerObject() {
 					}
 					return nil, nil
 				},
-			},"skill": &graphql.Field{
+			}, "skill": &graphql.Field{
 				Type:        graphql.Int,
 				Description: "The name of the customer.",
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
@@ -144,7 +141,7 @@ func defineCustomerObject() {
 					}
 					return nil, nil
 				},
-			},"email": &graphql.Field{
+			}, "email": &graphql.Field{
 				Type:        graphql.String,
 				Description: "The email of the customer.",
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
@@ -154,7 +151,7 @@ func defineCustomerObject() {
 					}
 					return nil, nil
 				},
-			},"telephone": &graphql.Field{
+			}, "telephone": &graphql.Field{
 				Type:        graphql.String,
 				Description: "The telephone of the customer.",
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
@@ -164,14 +161,14 @@ func defineCustomerObject() {
 					}
 					return nil, nil
 				},
-			},"birthday": &graphql.Field{
+			}, "birthday": &graphql.Field{
 				Type:        graphql.String,
 				Description: "The birthday of the customer.",
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 					customer, ok := p.Source.(Customer);
 					if ok {
 						//TODO may format this
-						birthday :=customer.birthday.String()
+						birthday := customer.birthday.String()
 						return birthday, nil
 					}
 					return nil, nil
@@ -200,11 +197,14 @@ func defineCustomerSchema() {
 						Description: "id of the user",
 						Type:        graphql.NewNonNull(graphql.Int),
 					},
-
 				},
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 					id := p.Args["id"].(int)
-					return Select(id), nil
+					customer, err := Select(id)
+					if err != nil {
+						return nil, nil
+					}
+					return customer, nil
 				},
 			},
 		},
@@ -213,44 +213,44 @@ func defineCustomerSchema() {
 	createAddress := graphql.NewInputObject(graphql.InputObjectConfig{
 		Name: "CreateAddress",
 		Fields: graphql.InputObjectConfigFieldMap{
-			"street" : &graphql.InputObjectFieldConfig{
-				Type: graphql.NewNonNull(graphql.String),
+			"street": &graphql.InputObjectFieldConfig{
+				Type:        graphql.NewNonNull(graphql.String),
 				Description: "street of the customer",
-			},"number" : &graphql.InputObjectFieldConfig{
-				Type: graphql.NewNonNull(graphql.Int),
+			}, "number": &graphql.InputObjectFieldConfig{
+				Type:        graphql.NewNonNull(graphql.Int),
 				Description: "number of the customer",
-			},"zip" : &graphql.InputObjectFieldConfig{
-				Type:graphql.NewNonNull(graphql.Int),
+			}, "zip": &graphql.InputObjectFieldConfig{
+				Type:        graphql.NewNonNull(graphql.Int),
 				Description: "zip of the customer",
-			},"city" : &graphql.InputObjectFieldConfig{
-				Type: graphql.String,
+			}, "city": &graphql.InputObjectFieldConfig{
+				Type:        graphql.String,
 				Description: "city of the customer",
 			},
 		},
 	})
 	createCustomer := graphql.NewInputObject(graphql.InputObjectConfig{
 		Name: "CreateCustomer",
-		Fields:  graphql.InputObjectConfigFieldMap{
-			"name" : &graphql.InputObjectFieldConfig{
-				Type: graphql.NewNonNull(graphql.String),
+		Fields: graphql.InputObjectConfigFieldMap{
+			"name": &graphql.InputObjectFieldConfig{
+				Type:        graphql.NewNonNull(graphql.String),
 				Description: "name of the customer",
-			},"surname" : &graphql.InputObjectFieldConfig{
-				Type: graphql.NewNonNull(graphql.String),
+			}, "surname": &graphql.InputObjectFieldConfig{
+				Type:        graphql.NewNonNull(graphql.String),
 				Description: "surname of the customer",
-			},"address" : &graphql.InputObjectFieldConfig{
-				Type: graphql.NewNonNull(createAddress),
+			}, "address": &graphql.InputObjectFieldConfig{
+				Type:        graphql.NewNonNull(createAddress),
 				Description: "address of the customer",
-			},"skill" : &graphql.InputObjectFieldConfig{
-				Type: graphql.NewNonNull(graphql.Int),
+			}, "skill": &graphql.InputObjectFieldConfig{
+				Type:        graphql.NewNonNull(graphql.Int),
 				Description: "skill level of the customer",
-			},"email" : &graphql.InputObjectFieldConfig{
-				Type: graphql.NewNonNull(graphql.String),
+			}, "email": &graphql.InputObjectFieldConfig{
+				Type:        graphql.NewNonNull(graphql.String),
 				Description: "email of the customer",
-			},"telephone" : &graphql.InputObjectFieldConfig{
-				Type: graphql.NewNonNull(graphql.String),
+			}, "telephone": &graphql.InputObjectFieldConfig{
+				Type:        graphql.NewNonNull(graphql.String),
 				Description: "phone number of the customer",
-			},"birthday" : &graphql.InputObjectFieldConfig{
-				Type: graphql.NewNonNull(graphql.String),
+			}, "birthday": &graphql.InputObjectFieldConfig{
+				Type:        graphql.NewNonNull(graphql.String),
 				Description: "birthday of the customer",
 			},
 		},
@@ -258,55 +258,55 @@ func defineCustomerSchema() {
 
 	argsCreate := graphql.FieldConfigArgument{
 		"input": &graphql.ArgumentConfig{
-			Description:"An input with the customer details",
-			Type: graphql.NewNonNull(createCustomer),
+			Description: "An input with the customer details",
+			Type:        graphql.NewNonNull(createCustomer),
 		},
 	}
 
 	updateAddress := graphql.NewInputObject(graphql.InputObjectConfig{
 		Name: "UpdateAddress",
 		Fields: graphql.InputObjectConfigFieldMap{
-			"street" : &graphql.InputObjectFieldConfig{
-				Type: graphql.String,
+			"street": &graphql.InputObjectFieldConfig{
+				Type:        graphql.String,
 				Description: "street of the customer",
-			},"number" : &graphql.InputObjectFieldConfig{
-				Type: graphql.Int,
+			}, "number": &graphql.InputObjectFieldConfig{
+				Type:        graphql.Int,
 				Description: "number of the customer",
-			},"zip" : &graphql.InputObjectFieldConfig{
-				Type:graphql.Int,
+			}, "zip": &graphql.InputObjectFieldConfig{
+				Type:        graphql.Int,
 				Description: "zip of the customer",
-			},"city" : &graphql.InputObjectFieldConfig{
-				Type: graphql.String,
+			}, "city": &graphql.InputObjectFieldConfig{
+				Type:        graphql.String,
 				Description: "city of the customer",
 			},
 		},
 	})
 	updateCustomer := graphql.NewInputObject(graphql.InputObjectConfig{
 		Name: "UpdateCustomer",
-		Fields:  graphql.InputObjectConfigFieldMap{
-			"id" : &graphql.InputObjectFieldConfig{
-				Type: graphql.NewNonNull(graphql.Int),
+		Fields: graphql.InputObjectConfigFieldMap{
+			"id": &graphql.InputObjectFieldConfig{
+				Type:        graphql.NewNonNull(graphql.Int),
 				Description: "id of the customer",
-			},"name" : &graphql.InputObjectFieldConfig{
-				Type: graphql.String,
+			}, "name": &graphql.InputObjectFieldConfig{
+				Type:        graphql.String,
 				Description: "name of the customer",
-			},"surname" : &graphql.InputObjectFieldConfig{
-				Type: graphql.String,
+			}, "surname": &graphql.InputObjectFieldConfig{
+				Type:        graphql.String,
 				Description: "surname of the customer",
-			},"address" : &graphql.InputObjectFieldConfig{
-				Type: updateAddress,
+			}, "address": &graphql.InputObjectFieldConfig{
+				Type:        updateAddress,
 				Description: "address of the customer",
-			},"skill" : &graphql.InputObjectFieldConfig{
-				Type: graphql.Int,
+			}, "skill": &graphql.InputObjectFieldConfig{
+				Type:        graphql.Int,
 				Description: "skill level of the customer",
-			},"email" : &graphql.InputObjectFieldConfig{
-				Type: graphql.String,
+			}, "email": &graphql.InputObjectFieldConfig{
+				Type:        graphql.String,
 				Description: "name of the customer",
-			},"telephone" : &graphql.InputObjectFieldConfig{
-				Type: graphql.String,
+			}, "telephone": &graphql.InputObjectFieldConfig{
+				Type:        graphql.String,
 				Description: "phone number of the customer",
-			},"birthday" : &graphql.InputObjectFieldConfig{
-				Type: graphql.String,
+			}, "birthday": &graphql.InputObjectFieldConfig{
+				Type:        graphql.String,
 				Description: "birthday of the customer",
 			},
 		},
@@ -314,8 +314,8 @@ func defineCustomerSchema() {
 
 	argsUpdate := graphql.FieldConfigArgument{
 		"input": &graphql.ArgumentConfig{
-			Description:"An input with the customer details",
-			Type: graphql.NewNonNull(updateCustomer),
+			Description: "An input with the customer details",
+			Type:        graphql.NewNonNull(updateCustomer),
 		},
 	}
 
@@ -331,9 +331,8 @@ func defineCustomerSchema() {
 
 	argsRemove := graphql.FieldConfigArgument{
 		"input": &graphql.ArgumentConfig{
-			Description:"An input with the customer details",
-			Type: removeCustomer,
-
+			Description: "An input with the customer details",
+			Type:        removeCustomer,
 		},
 	}
 	mutationType := graphql.NewObject(graphql.ObjectConfig{
@@ -349,7 +348,7 @@ func defineCustomerSchema() {
 					var address Address
 					var customer Customer
 
-					var inp= p.Args["input"].(map[string]interface{})
+					var inp = p.Args["input"].(map[string]interface{})
 
 					if inp["id"] == nil {
 						return nil, nil
@@ -359,7 +358,7 @@ func defineCustomerSchema() {
 
 					customer.id = id
 
-					var addressInp= inp["address"].(map[string]interface{})
+					var addressInp = inp["address"].(map[string]interface{})
 
 					if addressInp["street"] != nil {
 						street = addressInp["street"].(string)
@@ -405,7 +404,8 @@ func defineCustomerSchema() {
 
 					Update(&customer)
 
-					return Select(id), nil
+					result, _ := Select(id)
+					return result, nil
 				},
 			},
 
@@ -413,9 +413,9 @@ func defineCustomerSchema() {
 				Type: CustomerType,
 				Args: argsCreate,
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-					var inp= p.Args["input"].(map[string]interface{})
+					var inp = p.Args["input"].(map[string]interface{})
 
-					var addressInp= inp["address"].(map[string]interface{})
+					var addressInp = inp["address"].(map[string]interface{})
 					address := Address{
 
 						street:  addressInp["street"].(string),
@@ -450,7 +450,7 @@ func defineCustomerSchema() {
 
 					var customer Customer
 
-					customer = Select(inp["id"].(int))
+					customer, _ = Select(inp["id"].(int))
 
 					Remove(&customer)
 
@@ -460,10 +460,8 @@ func defineCustomerSchema() {
 		},
 	})
 
-
 	CustomerSchema, _ = graphql.NewSchema(graphql.SchemaConfig{
-		Query: queryType,
+		Query:    queryType,
 		Mutation: mutationType,
 	})
 }
-
