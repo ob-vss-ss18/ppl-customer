@@ -236,22 +236,22 @@ func defineCustomerSchema() {
 				Description: "name of the customer",
 			},"surname" : &graphql.InputObjectFieldConfig{
 				Type: graphql.NewNonNull(graphql.String),
-				Description: "name of the customer",
+				Description: "surname of the customer",
 			},"address" : &graphql.InputObjectFieldConfig{
 				Type: graphql.NewNonNull(createAddress),
-				Description: "name of the customer",
+				Description: "address of the customer",
 			},"skill" : &graphql.InputObjectFieldConfig{
 				Type: graphql.NewNonNull(graphql.Int),
-				Description: "name of the customer",
+				Description: "skill level of the customer",
 			},"email" : &graphql.InputObjectFieldConfig{
 				Type: graphql.NewNonNull(graphql.String),
-				Description: "name of the customer",
+				Description: "email of the customer",
 			},"telephone" : &graphql.InputObjectFieldConfig{
 				Type: graphql.NewNonNull(graphql.String),
-				Description: "name of the customer",
+				Description: "phone number of the customer",
 			},"birthday" : &graphql.InputObjectFieldConfig{
 				Type: graphql.NewNonNull(graphql.String),
-				Description: "name of the customer",
+				Description: "birthday of the customer",
 			},
 		},
 	})
@@ -286,28 +286,28 @@ func defineCustomerSchema() {
 		Fields:  graphql.InputObjectConfigFieldMap{
 			"id" : &graphql.InputObjectFieldConfig{
 				Type: graphql.NewNonNull(graphql.Int),
-				Description: "name of the customer",
+				Description: "id of the customer",
 			},"name" : &graphql.InputObjectFieldConfig{
 				Type: graphql.String,
 				Description: "name of the customer",
 			},"surname" : &graphql.InputObjectFieldConfig{
 				Type: graphql.String,
-				Description: "name of the customer",
+				Description: "surname of the customer",
 			},"address" : &graphql.InputObjectFieldConfig{
 				Type: updateAddress,
-				Description: "name of the customer",
+				Description: "address of the customer",
 			},"skill" : &graphql.InputObjectFieldConfig{
 				Type: graphql.Int,
-				Description: "name of the customer",
+				Description: "skill level of the customer",
 			},"email" : &graphql.InputObjectFieldConfig{
 				Type: graphql.String,
 				Description: "name of the customer",
 			},"telephone" : &graphql.InputObjectFieldConfig{
 				Type: graphql.String,
-				Description: "name of the customer",
+				Description: "phone number of the customer",
 			},"birthday" : &graphql.InputObjectFieldConfig{
 				Type: graphql.String,
-				Description: "name of the customer",
+				Description: "birthday of the customer",
 			},
 		},
 	})
@@ -324,7 +324,7 @@ func defineCustomerSchema() {
 		Fields: graphql.InputObjectConfigFieldMap{
 			"id": &graphql.InputObjectFieldConfig{
 				Type:        graphql.NewNonNull(graphql.Int),
-				Description: "street of the customer",
+				Description: "Id of the customer",
 			},
 		},
 	})
