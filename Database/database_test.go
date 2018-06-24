@@ -39,7 +39,7 @@ func TestInsert(t *testing.T) {
 	InitializeCustomerDB()
 	currentCustomer := customer[0]
 	id := InsertCustomer(currentCustomer)
-	createdCustomer := Select(id)
+	createdCustomer, _ := Select(id)
 
 
 	if createdCustomer.name != currentCustomer.name{
@@ -75,7 +75,7 @@ func TestRemove(t *testing.T) {
 	InitializeCustomerDB()
 	currentCustomer := customer[0]
 	id := InsertCustomer(currentCustomer)
-	createdCustomer := Select(id)
+	createdCustomer, _ := Select(id)
 
 	if createdCustomer.id == 0 {
 		t.Errorf("Insertion failed")
@@ -83,7 +83,7 @@ func TestRemove(t *testing.T) {
 
 	Remove(&createdCustomer)
 
-	createdCustomer = Select(createdCustomer.id)
+	createdCustomer, _ = Select(createdCustomer.id)
 
 	if createdCustomer.id != 0 {
 		t.Errorf("Remove failed")
@@ -95,7 +95,7 @@ func TestUpdate(t *testing.T) {
 	InitializeCustomerDB()
 	currentCustomer := customer[0]
 	id := InsertCustomer(currentCustomer)
-	createdCustomer := Select(id)
+	createdCustomer, _ := Select(id)
 
 	if createdCustomer.id == 0 {
 		t.Errorf("Insertion failed")
@@ -106,7 +106,7 @@ func TestUpdate(t *testing.T) {
 
 	Update(&currentCustomer)
 
-	updatedCustomer := Select(id)
+	updatedCustomer, _ := Select(id)
 
 	if updatedCustomer.id != currentCustomer.id {
 		t.Errorf("Got ID %d but it should be ID %d", updatedCustomer.id, currentCustomer.id)
