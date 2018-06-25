@@ -45,7 +45,7 @@ func SelectAll() map[int]Customer{
 
 		customers[id] = Customer{id,name,surname,Address{street,number,zipcode,city},Skill(skill),email,telephone,birthday}
 	}
-
+	closeDatabase(db,nil)
 	return customers
 }
 
@@ -62,15 +62,16 @@ func InitializeTables() (error) {
 	panicErr(err)
 
 	//local entry, just something is in de database
-	closeDatabase(db,nil);
+	closeDatabase(db,nil)
 
-	return err;
+	return err
 }
 
 //TODO method stub for lukas to fill up
 func Select(ID int) (Customer, error){
 
 	db, err := openDatabase()
+	defer closeDatabase(db, nil)
 	row, err := db.Query("SELECT * FROM customers WHERE id = $1", ID)
 	panicErr(err)
 	var customer Customer
@@ -218,7 +219,8 @@ func closeDatabase(db *sql.DB, rows *sql.Rows){
 	}
 
 
-	defer db.Close()
+	err := db.Close()
+	panicErr(err)
 }
 
 func panicErr(err error){

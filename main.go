@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"github.com/graphql-go/handler"
 	"fmt"
-	"github.com/ob-vss-ss18/ppl-customer/Database"
+	"ppl-customer/Database"
 )
 
 func main() {
