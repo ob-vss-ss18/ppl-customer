@@ -2,18 +2,19 @@ package main
 
 import (
 	"net/http"
-	"os"
 	"github.com/graphql-go/handler"
 	"fmt"
+	"github.com/ob-vss-ss18/ppl-customer/Database"
 )
 
 func main() {
 	// Initialize Data
-	InitializeUserDB()
+	Database.InitGraphQL()
+	Database.InitializeCustomerDB()
 
 	// Start HTTP Server
 	handle := handler.New(&handler.Config{
-		Schema: &UserSchema,
+		Schema: &Database.CustomerSchema,
 		Pretty: true,
 		GraphiQL: true,
 	})
@@ -22,16 +23,16 @@ func main() {
 	http.HandleFunc("/", hello)
 
 	//for local debugging
-	//err := http.ListenAndServe(":5000", nil)
+	err := http.ListenAndServe(":5000", nil)
+
 
 	//for heroku  usage
-	err := http.ListenAndServe(":"+os.Getenv("PORT"), nil)
+	//err := http.ListenAndServe(":"+os.Getenv("PORT"), nil)
 
 
 	if err != nil {
 		panic(err)
 	}
-
 }
 
 

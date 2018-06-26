@@ -62,6 +62,16 @@
 			"ImportPath": "github.com/graphql-go/handler",
 			"Comment": "v0.2.1-6-gc1c8ee7",
 			"Rev": "c1c8ee7b173a5f70fe039529659fbb30f1a435a0"
+		},
+		{
+			"ImportPath": "github.com/lib/pq",
+			"Comment": "go1.0-cutoff-212-g90697d6",
+			"Rev": "90697d60dd844d5ef6ff15135d0203f65d2f53b8"
+		},
+		{
+			"ImportPath": "github.com/lib/pq/oid",
+			"Comment": "go1.0-cutoff-212-g90697d6",
+			"Rev": "90697d60dd844d5ef6ff15135d0203f65d2f53b8"
 		}
 	]
 }
