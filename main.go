@@ -5,6 +5,7 @@ import (
 	"github.com/graphql-go/handler"
 	"fmt"
 	"github.com/ob-vss-ss18/ppl-customer/Database"
+	"os"
 )
 
 func main() {
@@ -23,11 +24,11 @@ func main() {
 	http.HandleFunc("/", hello)
 
 	//for local debugging
-	err := http.ListenAndServe(":5000", nil)
+	//err := http.ListenAndServe(":5000", nil)
 
 
 	//for heroku  usage
-	//err := http.ListenAndServe(":"+os.Getenv("PORT"), nil)
+	err := http.ListenAndServe(":"+os.Getenv("PORT"), nil)
 
 
 	if err != nil {
